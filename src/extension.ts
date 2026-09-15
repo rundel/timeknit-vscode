@@ -7,12 +7,12 @@ import { formatDuration, formatShare } from "./format";
 import { parseSidecar, Sidecar } from "./sidecar";
 import { ColorBy } from "./buckets";
 import { ThemeKind } from "./palette";
+import { checkSetup } from "./setup";
 
 const SIDECAR_GLOB = "**/.quarto/timeknit/**/*.json";
 const SIDECAR_SEGMENT = `${path.sep}.quarto${path.sep}timeknit${path.sep}`;
 
 let decorator: Decorator;
-let statusBar: vscode.StatusBarItem;
 const store = new Map<string, Sidecar>();
 const refreshTimers = new Map<string, NodeJS.Timeout>();
 const applied = new WeakMap<vscode.TextEditor, string>();
@@ -21,9 +21,7 @@ const loadIds = new WeakMap<Sidecar, number>();
 
 export function activate(context: vscode.ExtensionContext): void {
   decorator = new Decorator();
-  statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 50);
-  statusBar.command = "timeknit.showTimings";
-  context.subscriptions.push(decorator, statusBar);
+  context.subscriptions.push(decorator);
 
   const watcher = vscode.workspace.createFileSystemWatcher(SIDECAR_GLOB);
   context.subscriptions.push(
@@ -32,7 +30,6 @@ export function activate(context: vscode.ExtensionContext): void {
     watcher.onDidChange((uri) => void loadSidecar(uri)),
     watcher.onDidDelete((uri) => forgetSidecar(uri)),
     vscode.window.onDidChangeVisibleTextEditors(() => refreshAll()),
-    vscode.window.onDidChangeActiveTextEditor(() => updateStatusBar()),
     vscode.workspace.onDidChangeTextDocument((e) => scheduleRefresh(e.document)),
     vscode.window.onDidChangeActiveColorTheme(() => refreshAll()),
     vscode.workspace.onDidChangeConfiguration((e) => {
@@ -41,6 +38,7 @@ export function activate(context: vscode.ExtensionContext): void {
       }
     }),
     vscode.commands.registerCommand("timeknit.showTimings", showTimings),
+    vscode.commands.registerCommand("timeknit.checkSetup", checkSetup),
     vscode.commands.registerCommand("timeknit.toggle", async () => {
       const config = vscode.workspace.getConfiguration("timeknit");
       await config.update("enabled", !config.get<boolean>("enabled", true), vscode.ConfigurationTarget.Global);
@@ -124,7 +122,6 @@ function refreshAll(): void {
   for (const editor of vscode.window.visibleTextEditors) {
     refreshEditor(editor);
   }
-  updateStatusBar();
 }
 
 function scheduleRefresh(document: vscode.TextDocument): void {
@@ -196,18 +193,6 @@ function defaultColumn(document: vscode.TextDocument): number {
     }
   }
   return 80;
-}
-
-function updateStatusBar(): void {
-  const editor = vscode.window.activeTextEditor;
-  const sidecar = editor ? sidecarFor(editor.document) : undefined;
-  if (!editor || !sidecar) {
-    statusBar.hide();
-    return;
-  }
-  statusBar.text = `$(watch) ${formatDuration(sidecar.total)}`;
-  statusBar.tooltip = `timeknit: ${sidecar.chunks.length} chunks, ${formatDuration(sidecar.total)} total, recorded ${sidecar.time}${sidecar.status === "error" ? " (render failed)" : ""}`;
-  statusBar.show();
 }
 
 async function showTimings(): Promise<void> {

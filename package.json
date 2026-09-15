@@ -2,7 +2,7 @@
   "name": "timeknit",
   "displayName": "timeknit",
   "description": "Show knitr chunk execution times recorded by the timeknit R package inline in Quarto and R Markdown documents",
-  "version": "0.1.1-10",
+  "version": "0.1.1-13",
   "publisher": "rundel",
   "license": "MIT",
   "engines": {
@@ -34,6 +34,10 @@
       {
         "command": "timeknit.toggle",
         "title": "timeknit: Toggle Inline Chunk Timings"
+      },
+      {
+        "command": "timeknit.checkSetup",
+        "title": "timeknit: Check Setup"
       }
     ],
     "configuration": {
@@ -98,6 +102,11 @@
           "minimum": 0,
           "maximum": 1,
           "description": "Opacity of the scrollbar (overview ruler) mark for the slowest chunks."
+        },
+        "timeknit.rscriptPath": {
+          "type": "string",
+          "default": "",
+          "description": "Rscript used by \"timeknit: Check Setup\". Empty tries Positron's R, the R extension's r.rpath setting, R_HOME, then Rscript on the PATH."
         },
         "timeknit.colorBy": {
           "type": "string",

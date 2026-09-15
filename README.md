@@ -6,9 +6,9 @@ documents, using the timing records written by the timeknit R package.
 After a render, every chunk's opening line gets an italic annotation such as
 `⏱ 1.2 s`, right-aligned to one column (your first ruler, or column 80) and colored by how much of the document's total time the chunk took.
 Hovering shows the share of the total, the chunk's rank, and when the timing
-was recorded. The status bar shows the document total, and clicking it (or
-running "timeknit: Show Chunk Timings") lists the chunks slowest first and
-jumps to the one you pick.
+was recorded. "timeknit: Show Chunk Timings" in the command palette lists the
+chunks slowest first, with the document total in its title, and jumps to the
+one you pick.
 
 ## How it works
 
@@ -22,6 +22,15 @@ applies. Matching is a hash lookup and runs at most once per 300 ms of typing,
 so it stays out of the way. Nothing runs in the editor and no terminal output
 is parsed, so it works for `quarto render`, `quarto preview`,
 the Render button, and `rmarkdown::render()` alike.
+
+## Checking the setup
+
+The extension never runs R on its own, so it cannot tell whether the R side is
+configured. When nothing shows up after a render, run "timeknit: Check Setup"
+from the command palette: it runs `timeknit::sitrep()` in a fresh `Rscript`
+started in the active document's directory, exactly where Quarto starts R, and
+shows the report in the timeknit Output panel along with the R home, library
+paths, and which Rscript was used.
 
 ## Requirements
 
@@ -40,6 +49,7 @@ the Render button, and `rmarkdown::render()` alike.
 | `timeknit.fontSize` | `""`    | CSS length for the annotation text, such as `12px` or `0.85em` (relative to the editor font); empty uses the editor font size. Applied as a visual scale so alignment is unaffected |
 | `timeknit.rulerMinOpacity` | `0.3` | Opacity of the scrollbar mark for the fastest chunks |
 | `timeknit.rulerMaxOpacity` | `1`   | Opacity of the scrollbar mark for the slowest chunks |
+| `timeknit.rscriptPath` | `""` | Rscript used by the setup check; empty tries Positron's R, the R extension's `r.rpath`, `R_HOME`, then the PATH |
 
 The annotations are placed with character-width margins, so they line up when
 the editor uses a monospace font. Aligning to the editor's right edge is not
@@ -78,7 +88,7 @@ for local `.vsix` installs only, since Open VSX and the Marketplace reject
 prerelease version strings. Install it with
 
 ```sh
-positron --install-extension timeknit-0.1.1-10.vsix
+positron --install-extension timeknit-0.1.1-13.vsix
 ```
 
 or `code --install-extension` for VS Code, or through the Extensions view's

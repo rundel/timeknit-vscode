@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
 import { test } from "node:test";
 import { findChunks, labelFromHeader, matchRecords } from "../chunks";
 import { normalizeCode } from "../code";
@@ -7,6 +10,7 @@ import { intensityFor, makeContext } from "../buckets";
 import { colorStep, COLOR_STEPS, rgbForStep } from "../palette";
 import { parseSidecar } from "../sidecar";
 import { alignedWidth, annotationText, fontScale, labelMode, paddingFor, resolveColumn } from "../layout";
+import { candidateRscripts } from "../rscript";
 import { rulerAlpha } from "../opacity";
 
 const doc = [
@@ -207,4 +211,22 @@ test("font size becomes a visual scale relative to the editor font", () => {
   assert.equal(fontScale("12pt", 12), 1.333);
   assert.equal(fontScale("bogus", 12), undefined);
   assert.equal(fontScale("15px", 0), undefined);
+});
+
+test("Rscript candidates prefer explicit paths that exist and always include the PATH lookup", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "timeknit-"));
+  const rscript = path.join(dir, "Rscript");
+  fs.writeFileSync(rscript, "");
+  const candidates = candidateRscripts({
+    configured: rscript,
+    positronR: path.join(dir, "R"),
+    rExtensionR: "/nonexistent/R",
+    env: { R_HOME: "/nonexistent" },
+    platform: "linux",
+  });
+  assert.equal(candidates[0], rscript);
+  assert.ok(candidates.includes("Rscript"));
+  assert.ok(!candidates.some((c) => c.startsWith("/nonexistent")));
+  assert.equal(new Set(candidates).size, candidates.length);
+  assert.deepEqual(candidateRscripts({ env: {}, platform: "win32" }), ["Rscript"]);
 });
