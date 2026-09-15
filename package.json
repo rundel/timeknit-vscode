@@ -1,0 +1,132 @@
+{
+  "name": "timeknit",
+  "displayName": "timeknit",
+  "description": "Show knitr chunk execution times recorded by the timeknit R package inline in Quarto and R Markdown documents",
+  "version": "0.1.1-10",
+  "publisher": "rundel",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "quarto",
+    "knitr",
+    "rmarkdown",
+    "R",
+    "profiling"
+  ],
+  "activationEvents": [
+    "onLanguage:quarto",
+    "onLanguage:rmd",
+    "onLanguage:markdown",
+    "workspaceContains:**/.quarto/timeknit/**"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "timeknit.showTimings",
+        "title": "timeknit: Show Chunk Timings"
+      },
+      {
+        "command": "timeknit.toggle",
+        "title": "timeknit: Toggle Inline Chunk Timings"
+      }
+    ],
+    "configuration": {
+      "title": "timeknit",
+      "properties": {
+        "timeknit.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show chunk timings inline after each chunk's opening fence."
+        },
+        "timeknit.position": {
+          "type": "string",
+          "enum": [
+            "column",
+            "inline"
+          ],
+          "enumDescriptions": [
+            "Right-aligned so that every annotation ends at one column (see timeknit.column)",
+            "Directly after the opening fence"
+          ],
+          "default": "column",
+          "description": "Where the timing is placed on the chunk's opening line."
+        },
+        "timeknit.column": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "description": "Column at which timings end when timeknit.position is \"column\". 0 uses the first editor.rulers entry, or 80 when there are no rulers."
+        },
+        "timeknit.showLabel": {
+          "type": "string",
+          "enum": [
+            "off",
+            "inline",
+            "stacked"
+          ],
+          "enumDescriptions": [
+            "Timing only",
+            "Label in front of the timing on the chunk's opening line",
+            "Label on the chunk's opening line and the timing on the line below"
+          ],
+          "default": "off",
+          "description": "Whether and how to show the chunk label next to the timing, in the same style."
+        },
+        "timeknit.fontSize": {
+          "type": "string",
+          "default": "",
+          "pattern": "^(\\d+(\\.\\d+)?(px|pt|em|rem|%))?$",
+          "patternErrorMessage": "Use a CSS length such as 12px, 0.85em, or 90%, or leave empty.",
+          "description": "Font size of the timing annotation, as a CSS length such as \"12px\" or \"0.85em\" (relative to the editor font size). Empty uses the editor font size. The text is scaled visually, so column alignment is unaffected."
+        },
+        "timeknit.rulerMinOpacity": {
+          "type": "number",
+          "default": 0.3,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Opacity of the scrollbar (overview ruler) mark for the fastest chunks. Marks fade between this and timeknit.rulerMaxOpacity with the chunk's weight in the chosen color mode."
+        },
+        "timeknit.rulerMaxOpacity": {
+          "type": "number",
+          "default": 1,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Opacity of the scrollbar (overview ruler) mark for the slowest chunks."
+        },
+        "timeknit.colorBy": {
+          "type": "string",
+          "enum": [
+            "share",
+            "rank",
+            "duration"
+          ],
+          "enumDescriptions": [
+            "Share of the document's total chunk time, on a log scale from 0.5% (green) to 50% (red)",
+            "Rank among the document's chunks, from the fastest (green) to the slowest (red)",
+            "Absolute duration, on a log scale from 10 ms (green) to 10 s (red)"
+          ],
+          "default": "share",
+          "description": "What the color of a chunk's time and scrollbar mark reflects."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "node --test out/test/*.test.js",
+    "package": "vsce package --allow-missing-repository"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.3.0",
+    "typescript": "^5.5.0"
+  }
+}
