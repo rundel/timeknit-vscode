@@ -70,17 +70,29 @@ active theme. The scrollbar marks additionally fade with the same intensity,
 clamped between `timeknit.rulerMinOpacity` and `timeknit.rulerMaxOpacity`, so
 quick chunks stay visible but recede while slow chunks stand out.
 
-## Building and installing
+## Installation
+
+The extension is not on the Marketplace or Open VSX, so install it from a
+`.vsix` built from the GitHub repository. Node.js and npm are required:
 
 ```sh
+git clone https://github.com/rundel/timeknit-vscode.git
+cd timeknit-vscode
 npm install
 npm run compile
-npm test
 npm run package
+positron --install-extension timeknit-*.vsix
 ```
 
-`npm run package` produces `timeknit-<version>.vsix`. Reload the window after
-installing over a previous version.
+`npm run package` produces `timeknit-<version>.vsix`. Use
+`code --install-extension` for VS Code, or the Extensions view's "Install from
+VSIX" action. Reload the window after installing over a previous version, and
+run `git pull` in the clone and repeat the build to update.
+
+## Development
+
+`npm test` runs the tests after `npm run compile`. To develop, open this folder
+and press F5 to launch an Extension Development Host.
 
 ## Versioning
 
@@ -90,12 +102,4 @@ The extension version tracks the R package version with a numeric suffix:
 prerelease tag, so every `0.1.1-N` sorts below a bare `0.1.1` (installing one
 over a bare build of the same base version needs `--force`), and the scheme is
 for local `.vsix` installs only, since Open VSX and the Marketplace reject
-prerelease version strings. Install it with
-
-```sh
-positron --install-extension timeknit-0.1.1-13.vsix
-```
-
-or `code --install-extension` for VS Code, or through the Extensions view's
-"Install from VSIX" action. To develop, open this folder and press F5 to launch
-an Extension Development Host.
+prerelease version strings.
