@@ -1,7 +1,8 @@
 # timeknit for Positron and VS Code
 
 Shows how long each knitr chunk took to run, inline in `.qmd` and `.Rmd`
-documents, using the timing records written by the timeknit R package.
+documents, using the timing records written by the
+[timeknit](https://github.com/rundel/timeknit) R package.
 
 After a render, every chunk's opening line gets an italic annotation such as
 `⏱ 1.2 s`, right-aligned to one column (your first ruler, or column 80) and colored by how much of the document's total time the chunk took.
@@ -13,7 +14,9 @@ one you pick.
 ## How it works
 
 The R package writes `<project>/.quarto/timeknit/<document>.json` at the end of
-each render. This extension watches for those files in the workspace and
+each render (the record format is described under
+[Timing records for editors](https://github.com/rundel/timeknit#timing-records-for-editors)
+in its README). This extension watches for those files in the workspace and
 matches each record to the chunk in the open editor with identical code (after
 trimming trailing whitespace and the leading `#|` option lines), preferring
 the chunk with the same label when several are identical. A chunk you edit
@@ -34,8 +37,10 @@ paths, and which Rscript was used.
 
 ## Requirements
 
-- The timeknit R package installed and active (see its README), with the
-  `timeknit.record` option left at its default of `TRUE`.
+- The [timeknit](https://github.com/rundel/timeknit) R package installed and
+  active, with the `timeknit.record` option left at its default of `TRUE`.
+  Its [README](https://github.com/rundel/timeknit#setting-up-a-project) covers
+  the setup.
 - Positron or VS Code 1.90 or later.
 
 ## Settings
