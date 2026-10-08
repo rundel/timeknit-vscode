@@ -68,6 +68,32 @@ test("findChunks parses fences, labels, and normalized code without option lines
   assert.equal(chunks[2].label, undefined);
 });
 
+test("findChunks keeps indented or unspaced #| lines as code, as knitr does", () => {
+  const chunks = findChunks([
+    "```{python indented}",
+    "  #| echo: false",
+    "import os",
+    "```",
+    "```{python nospace}",
+    "#|echo: false",
+    "import sys",
+    "```",
+    "```{python}",
+    "#| label: spaced",
+    "#|   echo: false",
+    "import time",
+    "```",
+  ]);
+  assert.deepEqual(
+    chunks.map((c) => [c.knitrLabel, c.code]),
+    [
+      ["indented", "  #| echo: false\nimport os"],
+      ["nospace", "#|echo: false\nimport sys"],
+      ["spaced", "import time"],
+    ]
+  );
+});
+
 test("labelFromHeader handles positional and option labels", () => {
   assert.equal(labelFromHeader(" setup"), "setup");
   assert.equal(labelFromHeader(" setup, echo=FALSE"), "setup");

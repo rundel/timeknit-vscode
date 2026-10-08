@@ -17,8 +17,10 @@ export interface Match {
 
 const FENCE = /^[\t >]*(`{3,})\s*\{([a-zA-Z0-9_]+)( *[ ,].*)?\}\s*$/;
 const FENCE_END = /^[\t >]*`{3,}\s*$/;
-const OPTION_LINE = /^\s*#\|/;
-const YAML_LABEL = /^\s*#\|\s*label\s*:\s*["']?([^"'\s]+)/;
+// knitr (via xfun::divide_chunk) only treats a line as a chunk option when it
+// starts at column 0 with "#| " including the space; anything else is code.
+const OPTION_LINE = /^#\| /;
+const YAML_LABEL = /^#\| \s*label\s*:\s*["']?([^"'\s]+)/;
 
 export function labelFromHeader(rest: string | undefined): string | undefined {
   if (!rest) {
