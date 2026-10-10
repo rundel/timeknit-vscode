@@ -5,6 +5,14 @@
   "version": "0.1.1-13",
   "publisher": "rundel",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rundel/timeknit-vscode.git"
+  },
+  "homepage": "https://github.com/rundel/timeknit-vscode#readme",
+  "bugs": {
+    "url": "https://github.com/rundel/timeknit-vscode/issues"
+  },
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -130,7 +138,7 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "test": "node --test out/test/*.test.js",
-    "package": "vsce package --allow-missing-repository"
+    "package": "vsce package"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
